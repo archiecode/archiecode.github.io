@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+
+  
+  <title>kotlin使用dagger2的总结 | 边城杂货</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="dagger2Android和java的一个快速依赖注入框架，使用它可以让我们写出更加简洁的代码，现在介绍kotlin dagger2的基本使用">
+<meta name="keywords" content="Kotlin">
+<meta property="og:type" content="article">
+<meta property="og:title" content="kotlin使用dagger2的总结">
+<meta property="og:url" content="http://yoursite.com/2018/02/05/kotlin使用dagger2的总结/index.html">
+<meta property="og:site_name" content="边城杂货">
+<meta property="og:description" content="dagger2Android和java的一个快速依赖注入框架，使用它可以让我们写出更加简洁的代码，现在介绍kotlin dagger2的基本使用">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2018-05-15T08:08:47.052Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="kotlin使用dagger2的总结">
+<meta name="twitter:description" content="dagger2Android和java的一个快速依赖注入框架，使用它可以让我们写出更加简洁的代码，现在介绍kotlin dagger2的基本使用">
+  
+    <link rel="alternate" href="/atom.xml" title="边城杂货" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">边城杂货</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">碎片化的代码之旅</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">首页</a>
+        
+          <a class="main-nav-link" href="/archives">归档</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-kotlin使用dagger2的总结" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2018/02/05/kotlin使用dagger2的总结/" class="article-date">
+  <time datetime="2018-02-05T08:07:36.000Z" itemprop="datePublished">2018-02-05</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      kotlin使用dagger2的总结
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="dagger2"><a href="#dagger2" class="headerlink" title="dagger2"></a>dagger2</h3><p>Android和java的一个快速依赖注入框架，使用它可以让我们写出更加简洁的代码，现在介绍kotlin dagger2的基本使用<br><a id="more"></a></p>
+<h3 id="gradle添加依赖"><a href="#gradle添加依赖" class="headerlink" title="gradle添加依赖"></a>gradle添加依赖</h3><figure class="highlight gradle"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">implementation <span class="string">"com.google.dagger:dagger:$dagger_version"</span></span><br><span class="line">implementation <span class="string">"com.google.dagger:dagger-android:$dagger_version"</span></span><br><span class="line">implementation <span class="string">"com.google.dagger:dagger-android-support:$dagger_version"</span></span><br><span class="line">kapt <span class="string">"com.google.dagger:dagger-compiler:$dagger_version"</span></span><br><span class="line">kapt <span class="string">"com.google.dagger:dagger-android-processor:$dagger_version"</span></span><br></pre></td></tr></table></figure>
+<p>PS: 需要用到kapt，需要开启kapt，添加插件即可<br><figure class="highlight gradle"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">apply plugin: <span class="string">'kotlin-kapt'</span></span><br></pre></td></tr></table></figure></p>
+<h3 id="Dagger-2-常用注解的总结"><a href="#Dagger-2-常用注解的总结" class="headerlink" title="Dagger 2 常用注解的总结"></a>Dagger 2 常用注解的总结</h3><table>
+<thead>
+<tr>
+<th>注解</th>
+<th>使用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>@Module</td>
+<td>使用在方法包含 @Provides 注解的类中.</td>
+</tr>
+<tr>
+<td>@Provides</td>
+<td>可以在 @Module 类中的方法名上使用， 该方法提供依赖注入的对象.</td>
+</tr>
+<tr>
+<td>@Singleton</td>
+<td>单例对象.</td>
+</tr>
+<tr>
+<td>@Component</td>
+<td>在接口中使用. Dagger 2 生成所有modules的依赖的代码.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="Module-amp-Provides-负责提供注入对象"><a href="#Module-amp-Provides-负责提供注入对象" class="headerlink" title="Module &amp; Provides 负责提供注入对象"></a>Module &amp; Provides 负责提供注入对象</h3><figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Module</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">DataModule</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Singleton</span> <span class="meta">@Provides</span></span><br><span class="line">    <span class="function"><span class="keyword">fun</span> <span class="title">providesOkHttp</span><span class="params">(preferences: <span class="type">SharedPreferences</span>)</span></span>: OkHttpClient = OkHttpClient.Builder()</span><br><span class="line">            .addInterceptor(HttpLoggingInterceptor()</span><br><span class="line">                    .apply &#123; level = HttpLoggingInterceptor.Level.BODY &#125;)</span><br><span class="line">            .addInterceptor &#123;</span><br><span class="line">                <span class="keyword">val</span> token = preferences.getString(<span class="string">"token"</span>, <span class="string">""</span>)</span><br><span class="line">                <span class="keyword">val</span> builer: Request.Builder = it.request().newBuilder()</span><br><span class="line">                <span class="keyword">if</span> (!token.isNullOrBlank()) &#123;</span><br><span class="line">                    println(<span class="string">"token: <span class="variable">$token</span>"</span>)</span><br><span class="line">                    builer.addHeader(<span class="string">"token"</span>, token)</span><br><span class="line">                &#125;</span><br><span class="line">                builer.addHeader(<span class="string">"channel"</span>, <span class="string">"android"</span>)</span><br><span class="line">                it.proceed(builer.build())</span><br><span class="line">                 &#125;</span><br><span class="line">            .build()</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Singleton</span> <span class="meta">@Provides</span></span><br><span class="line">    <span class="function"><span class="keyword">fun</span> <span class="title">provideRetrofit</span><span class="params">(oktHttpClient: <span class="type">OkHttpClient</span>)</span></span>: Retrofit</span><br><span class="line">            = Retrofit.Builder()</span><br><span class="line">            .client(oktHttpClient)</span><br><span class="line">            .baseUrl(BASE_URL)</span><br><span class="line">            .addConverterFactory(GsonConverterFactory.create(Gson()))</span><br><span class="line">            .addCallAdapterFactory(RxJava2CallAdapterFactory.create())</span><br><span class="line">            .build()</span><br><span class="line">            <span class="comment">//......</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="Component-连接注入器和注入对象"><a href="#Component-连接注入器和注入对象" class="headerlink" title="Component 连接注入器和注入对象"></a>Component 连接注入器和注入对象</h3><figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Singleton</span></span><br><span class="line"><span class="meta">@Component(modules = [</span></span><br><span class="line"><span class="meta">        AndroidSupportInjectionModule::class,</span></span><br><span class="line"><span class="meta">        AppModule::class,</span></span><br><span class="line"><span class="meta">        ActivityModule::class])</span></span><br><span class="line"><span class="class"><span class="keyword">interface</span> <span class="title">AppComponent</span>: <span class="type">AndroidInjector</span>&lt;<span class="type">MyApp</span>&gt; </span>&#123;</span><br><span class="line">    <span class="meta">@Component</span>.Builder</span><br><span class="line">    <span class="class"><span class="keyword">interface</span> <span class="title">Builder</span> </span>&#123;</span><br><span class="line">        <span class="meta">@BindsInstance</span></span><br><span class="line">        <span class="function"><span class="keyword">fun</span> <span class="title">application</span><span class="params">(application: <span class="type">MyApp</span>)</span></span>: Builder</span><br><span class="line">        <span class="function"><span class="keyword">fun</span> <span class="title">build</span><span class="params">()</span></span>: AppComponent</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">inject</span><span class="params">(app: <span class="type">MyApp</span>)</span></span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="Multibindings"><a href="#Multibindings" class="headerlink" title="Multibindings"></a>Multibindings</h3><p>这里我们用AAC（Android Components Architecture）来做示例</p>
+<h4 id="1-绑定注解的Key"><a href="#1-绑定注解的Key" class="headerlink" title="1.绑定注解的Key"></a>1.绑定注解的Key</h4><figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@MustBeDocumented</span></span><br><span class="line"><span class="meta">@Target(AnnotationTarget.FUNCTION)</span></span><br><span class="line"><span class="meta">@Retention(AnnotationRetention.RUNTIME)</span></span><br><span class="line"><span class="meta">@MapKey</span></span><br><span class="line"><span class="keyword">internal</span> <span class="keyword">annotation</span> <span class="class"><span class="keyword">class</span> <span class="title">ViewModelKey</span></span>(<span class="keyword">val</span> value: KClass&lt;<span class="keyword">out</span> ViewModel&gt;)</span><br></pre></td></tr></table></figure>
+<h4 id="2-绑定具体实例到Map中"><a href="#2-绑定具体实例到Map中" class="headerlink" title="2.绑定具体实例到Map中"></a>2.绑定具体实例到Map中</h4><figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Module</span></span><br><span class="line"><span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">ViewModelModule</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Binds</span></span><br><span class="line">    <span class="meta">@IntoMap</span></span><br><span class="line">    <span class="meta">@ViewModelKey(LoginViewModel::class)</span></span><br><span class="line">    <span class="keyword">abstract</span> <span class="function"><span class="keyword">fun</span> <span class="title">bindLoginViewModel</span><span class="params">(viewModel: <span class="type">LoginViewModel</span>)</span></span>: ViewModel</span><br><span class="line">    <span class="comment">//......</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="3-注入获取依赖Map，-有必要创建一个工厂类"><a href="#3-注入获取依赖Map，-有必要创建一个工厂类" class="headerlink" title="3.注入获取依赖Map， 有必要创建一个工厂类"></a>3.注入获取依赖Map， 有必要创建一个工厂类</h4><figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ViewModelFactory</span> <span class="meta">@Inject</span> <span class="keyword">constructor</span></span>(<span class="keyword">private</span> <span class="keyword">val</span> creators: Map&lt;Class&lt;<span class="keyword">out</span> ViewModel&gt;, <span class="meta">@JvmSuppressWildcards</span> Provider&lt;ViewModel&gt;&gt;)</span><br><span class="line">    : ViewModelProvider.Factory &#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Suppress(<span class="meta-string">"UNCHECKED_CAST"</span>)</span></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="type">&lt;T : ViewModel&gt;</span> <span class="title">create</span><span class="params">(modelClass: <span class="type">Class</span>&lt;<span class="type">T</span>&gt;)</span></span>: T &#123;</span><br><span class="line">        <span class="keyword">var</span> creator: Provider&lt;ViewModel&gt;? = creators[modelClass]</span><br><span class="line">        <span class="keyword">if</span> (creator == <span class="literal">null</span>) &#123;</span><br><span class="line">            <span class="keyword">for</span> ((key, value) <span class="keyword">in</span> creators) &#123;</span><br><span class="line">                <span class="keyword">if</span> (modelClass.isAssignableFrom(key)) &#123;</span><br><span class="line">                    creator = value</span><br><span class="line">                    <span class="keyword">break</span></span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (creator == <span class="literal">null</span>) <span class="keyword">throw</span> IllegalArgumentException(<span class="string">"unknown model class "</span> + modelClass)</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="keyword">return</span> creator.<span class="keyword">get</span>() <span class="keyword">as</span> T</span><br><span class="line">        &#125; <span class="keyword">catch</span> (e: Exception) &#123;</span><br><span class="line">            <span class="keyword">throw</span> RuntimeException(e)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2018/02/05/kotlin使用dagger2的总结/" data-id="cjh8fnaxz0007f0tt7gcgre2p" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Kotlin/">Kotlin</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2018/05/15/Android通过Navigation组件实现navigation/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          Android通过Navigation组件实现navigation
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2018/01/05/Google bbr tcp加速/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">Google bbr tcp加速</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Android/">Android</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Kotlin/">Kotlin</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux/">Linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/React/">React</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/Android/" style="font-size: 10px;">Android</a> <a href="/tags/Kotlin/" style="font-size: 10px;">Kotlin</a> <a href="/tags/Linux/" style="font-size: 10px;">Linux</a> <a href="/tags/React/" style="font-size: 10px;">React</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/05/">May 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">February 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/01/">January 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">November 2016</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2018/05/15/Android通过Navigation组件实现navigation/">Android通过Navigation组件实现navigation</a>
+          </li>
+        
+          <li>
+            <a href="/2018/02/05/kotlin使用dagger2的总结/">kotlin使用dagger2的总结</a>
+          </li>
+        
+          <li>
+            <a href="/2018/01/05/Google bbr tcp加速/">Google bbr tcp加速</a>
+          </li>
+        
+          <li>
+            <a href="/2016/11/15/Redux初探/">Redux初探</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2018 archie<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">首页</a>
+  
+    <a href="/archives" class="mobile-nav-link">归档</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>
